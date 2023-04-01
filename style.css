@@ -1,0 +1,15 @@
+body {
+    background-color: rgb(178, 178, 178);
+}
+
+header {
+    background-color: green;
+}
+
+.nav-bar {
+    background-color: aquamarine;
+}
+
+.homepage-options {
+    background-color: aliceblue;
+}
