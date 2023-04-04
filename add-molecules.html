@@ -1,8 +1,10 @@
 <!DOCTYPE html>
     <html lang="en">
         <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+            <script src="add-molecules.js"></script>
             <meta charset="utf-8"/>
-            <title>MolViz</title>
+            <title>Add Molecule</title>
             <link rel="stylesheet" type="text/css" href="style.css">
             <div class="logo">
                 <a href="index.html">
@@ -20,6 +22,6 @@
             <label id="mol-name-input">Molecule Name</label>
             <input type="text" id="mol-name"/><br>
             <input type="file" id="sdf_file"/>
-            <input type="submit" value="Upload"/>
+            <button id="button">Upload</button>
         </body>
     </html>

@@ -2,14 +2,15 @@ import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler;
 import MolDisplay
 import molsql
+import urllib
 import io
 
-public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/view-molecules.html', '/add-elements.html', '/view-elements.html', '/logo.png']
+public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/logo.png']
 
 # Subclass of BaseHTTPRequestHandler, used to run python webserver
 class MyHandler(BaseHTTPRequestHandler):
 
-    db = molsql.Database(True)
+    db = molsql.Database(False)
     db.create_tables()
 
     # Presents the web-form
@@ -29,6 +30,18 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.end_headers()
 
                 self.wfile.write(bytes(page, "utf-8"))
+
+            if self.path.endswith(".js"):
+                self.send_header("Content-type", "text/javascript")
+
+                script = open (self.path[1:], "rb")
+                script_data = script.read()
+                script.close()
+
+                self.send_header("Content-length", len(script_data))
+                self.end_headers()
+
+                self.wfile.write(bytes(script_data))
 
             elif self.path.endswith(".png"):
                 self.send_header("Content-type", "image/png")
@@ -50,17 +63,31 @@ class MyHandler(BaseHTTPRequestHandler):
 
     # Sends an svg file to the client
     def do_POST(self):
-        if self.path == "/add-molecules.html":
+        if self.path == "/molecule-add-handler.html":
+            header_read = self.rfile.read(int(self.headers['content-length']))
+            header_bytes = io.BytesIO(header_read)
+            header_text = io.TextIOWrapper(header_bytes)
 
-            molecule = MolDisplay.Molecule()
-            
-            for i in range(0,4):    # skip 4 lines
-                string = next(self.rfile)
-            
-            molecule.parse(string)
-            molecule.sort()
+            print ('reached this point')
 
-            self.db.add_molecule()
+            postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
+            
+            print (postvars)
+
+            #self.db.add_molecule(postvars.get('name')[0], header_text)
+
+            name = postvars.get('name')[0]
+
+            print (f'Added {name}')
+
+        elif self.path == "/element-add-handler.html":
+            print('Made it')
+            content_length = int(self.headers['Content-length'])
+            body = self.rfile.read(content_length)
+
+            postvars = urllib.parse.parse_qs(body.decode('utf-8'))
+            
+            self.db['Elements'] = (int(postvars.get('number')[0]), postvars.get('code')[0], postvars.get('name')[0], postvars.get('color1')[0][1:], postvars.get('color2')[0][1:], postvars.get('color3')[0][1:], int(postvars.get('radius')[0]))
 
         if self.path == "/molecule":
             # Reads contents of the previous webform and converts that data into
