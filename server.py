@@ -3,9 +3,10 @@ from http.server import HTTPServer, BaseHTTPRequestHandler;
 import MolDisplay
 import molsql
 import urllib
+import json
 import io
 
-public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/logo.png']
+public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/view-elements.js', '/elements.json', '/logo.png']
 
 # Subclass of BaseHTTPRequestHandler, used to run python webserver
 class MyHandler(BaseHTTPRequestHandler):
@@ -31,8 +32,20 @@ class MyHandler(BaseHTTPRequestHandler):
 
                 self.wfile.write(bytes(page, "utf-8"))
 
-            if self.path.endswith(".js"):
+            elif self.path.endswith(".js"):
                 self.send_header("Content-type", "text/javascript")
+
+                script = open (self.path[1:], "rb")
+                script_data = script.read()
+                script.close()
+
+                self.send_header("Content-length", len(script_data))
+                self.end_headers()
+
+                self.wfile.write(bytes(script_data))
+
+            elif self.path.endswith(".json"):
+                self.send_header("Content-type", "application/json")
 
                 script = open (self.path[1:], "rb")
                 script_data = script.read()
@@ -55,6 +68,42 @@ class MyHandler(BaseHTTPRequestHandler):
 
                 self.wfile.write(bytes(image_data))
 
+
+                # elements_file = open("elements.json", "w")
+                # elements_file.write(table)
+                # elements_file.close()
+
+        elif self.path == "/add-elements-to-table.html":
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+
+            self.end_headers()
+
+            cursor = self.db.conn.cursor()
+            cursor.execute(f'''SELECT * FROM ELEMENTS;''')
+            elements = cursor.fetchall()
+
+            # table = '[\n'
+            # for i in elements:
+            #     table += ('\t{')
+            #     table += (f'"number":{i[0]}, "code":"{i[1]}", "name":"{i[2]}", "color1":"#{i[3]}", "color2":"#{i[4]}", "color3":"#{i[5]}", "radius":{i[6]}')
+            #     table += ('},\n')
+            # table += (']')
+
+            # print (table)
+
+            current_dict = []
+
+            for i in elements:
+                current_dict.append({'number': i[0], 'code': i[1], 'name': i[2], 'color1': f'#{i[3]}', 'color2': f'#{i[4]}', 'color3': f'#{i[5]}', 'radius': i[6]})
+                #self.wfile.writelines(json.dumps({"number":i[0], "code":i[1], "name":i[2], "color1":f'#{i[3]}', "color2":f'#{i[4]}', "color3":f'#{i[5]}', "radius":i[6]}))
+
+            print(current_dict)
+            json_dict = json.dumps(current_dict).encode()
+            self.wfile.write(json_dict)
+            self.send_header('Content-length', len(json_dict))
+
+
         else:
             # 404 error
             self.send_response(404)
@@ -65,18 +114,12 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/molecule-add-handler.html":
             header_read = self.rfile.read(int(self.headers['content-length']))
-            header_bytes = io.BytesIO(header_read)
-
-            print ('reached this point')
 
             postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
             
             self.db.add_molecule(postvars.get('name')[0], io.StringIO(postvars.get('file')[0]))
 
-            print ('Add successful')
-
         elif self.path == "/element-add-handler.html":
-            print('Made it')
             content_length = int(self.headers['Content-length'])
             body = self.rfile.read(content_length)
 
@@ -84,27 +127,7 @@ class MyHandler(BaseHTTPRequestHandler):
             
             self.db['Elements'] = (int(postvars.get('number')[0]), postvars.get('code')[0], postvars.get('name')[0], postvars.get('color1')[0][1:], postvars.get('color2')[0][1:], postvars.get('color3')[0][1:], int(postvars.get('radius')[0]))
 
-        if self.path == "/molecule":
-            # Reads contents of the previous webform and converts that data into
-            # a TextIOWrapper
-            header_read = self.rfile.read(int(self.headers['content-length']))
-            header_bytes = io.BytesIO(header_read)
-            header_text = io.TextIOWrapper(header_bytes)
 
-            # Passing in of TextIOWrapper, where the molecule file is parsed sorted
-            # and written to an SVG format
-            molecule = MolDisplay.Molecule()
-            molecule.parse(header_text)
-            molecule.sort()
-            svg_string = molecule.svg()
-
-            # Display of SVG
-            self.send_response(200)
-            self.send_header("Content-type", "image/svg+xml")
-            self.send_header("Content-length", len(svg_string))
-            self.end_headers()
-
-            self.wfile.write(bytes(svg_string, "utf-8"))
         else:
             # 404 error
             self.send_response(404)
