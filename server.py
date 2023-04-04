@@ -66,19 +66,14 @@ class MyHandler(BaseHTTPRequestHandler):
         if self.path == "/molecule-add-handler.html":
             header_read = self.rfile.read(int(self.headers['content-length']))
             header_bytes = io.BytesIO(header_read)
-            header_text = io.TextIOWrapper(header_bytes)
 
             print ('reached this point')
 
             postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
             
-            print (postvars)
+            self.db.add_molecule(postvars.get('name')[0], io.StringIO(postvars.get('file')[0]))
 
-            #self.db.add_molecule(postvars.get('name')[0], header_text)
-
-            name = postvars.get('name')[0]
-
-            print (f'Added {name}')
+            print ('Add successful')
 
         elif self.path == "/element-add-handler.html":
             print('Made it')
