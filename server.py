@@ -68,10 +68,17 @@ class MyHandler(BaseHTTPRequestHandler):
 
                 self.wfile.write(bytes(image_data))
 
+            elif self.path.endswith(".css"):
+                self.send_header("Content-type", "text/css")
 
-                # elements_file = open("elements.json", "w")
-                # elements_file.write(table)
-                # elements_file.close()
+                stylesheet = open (self.path[1:], "r")
+                style_data = stylesheet.read()
+                stylesheet.close()
+
+                self.send_header("Content-length", len(style_data))
+                self.end_headers()
+
+                self.wfile.write(bytes(style_data, "utf-8"))
 
         elif self.path == "/add-elements-to-table.html":
             self.send_response(200)
@@ -215,7 +222,7 @@ class MyHandler(BaseHTTPRequestHandler):
             svg_string = mol.svg()
             
             self.send_response(200)
-            self.send_header("Content-type", "image/svg+xml")
+            self.send_header("Content-type", "text/html")
             self.send_header("Content-length", len(svg_string))
             self.end_headers()
             self.wfile.write(bytes(svg_string, "utf-8"))

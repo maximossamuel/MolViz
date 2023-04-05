@@ -26,6 +26,10 @@ class Atom():
     def svg(self):
         cx = f'{"{:.2f}".format((self.x * 100.0) + offsetx)}'
         cy = f'{"{:.2f}".format((self.y * 100.0) + offsety)}'
+
+        if radius.get(self.element) == None or element_name.get(self.element) == None:
+            return f'  <circle cx="{cx}" cy="{cy}" r="30" fill="#000000"/>\n'
+        
         r = f'{radius.get(self.element)}'
         fill = f'{element_name.get(self.element)}'
 

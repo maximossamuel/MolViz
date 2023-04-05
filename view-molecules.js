@@ -56,10 +56,9 @@ $(document).ready(
             {
                 molecule_id: mol_id
             },function(data, status){
-                    e.log(data)
+                    console.log(data)
                     $("#svg-display").empty();
-                    div_data.appendChild(data);var div_data = document.getElementById('#svg_display');
-                    consol
+                    $("#svg-display").append(data);
             })
         }
         )
