@@ -5,6 +5,7 @@ $(document).ready(
 
             function()
             {
+                if ($("#element-number").val() > -1 && $("#element-number").val() != null && $("#element-code").val() != null && $("#element-code").val() != "" && $("#element-name").val() != null && $("#element-name").val() != "" && $("#element-radius").val() > 0 && $("#element-radius").val() != null){
                 $.post("/element-add-handler.html",
                 {
                     number: $("#element-number").val(),
@@ -16,6 +17,11 @@ $(document).ready(
                     radius: $("#element-radius").val()
                 }
                 );
+                alert ("Successfully added.")
+            }
+            else{
+                alert ("Something's not right. Please try again")
+            }
             }
         );
     }
