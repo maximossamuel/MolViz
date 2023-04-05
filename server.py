@@ -6,7 +6,7 @@ import urllib
 import json
 import io
 
-public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/view-elements.js', '/elements.json', '/logo.png']
+public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/view-elements.js', '/view-molecules.js', '/logo.png']
 
 # Subclass of BaseHTTPRequestHandler, used to run python webserver
 class MyHandler(BaseHTTPRequestHandler):
@@ -80,29 +80,39 @@ class MyHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             cursor = self.db.conn.cursor()
-            cursor.execute(f'''SELECT * FROM ELEMENTS;''')
+            cursor.execute(f'''SELECT * FROM Elements;''')
             elements = cursor.fetchall()
-
-            # table = '[\n'
-            # for i in elements:
-            #     table += ('\t{')
-            #     table += (f'"number":{i[0]}, "code":"{i[1]}", "name":"{i[2]}", "color1":"#{i[3]}", "color2":"#{i[4]}", "color3":"#{i[5]}", "radius":{i[6]}')
-            #     table += ('},\n')
-            # table += (']')
-
-            # print (table)
 
             current_dict = []
 
             for i in elements:
                 current_dict.append({'number': i[0], 'code': i[1], 'name': i[2], 'color1': f'#{i[3]}', 'color2': f'#{i[4]}', 'color3': f'#{i[5]}', 'radius': i[6]})
-                #self.wfile.writelines(json.dumps({"number":i[0], "code":i[1], "name":i[2], "color1":f'#{i[3]}', "color2":f'#{i[4]}', "color3":f'#{i[5]}', "radius":i[6]}))
 
             print(current_dict)
             json_dict = json.dumps(current_dict).encode()
             self.wfile.write(json_dict)
             self.send_header('Content-length', len(json_dict))
 
+        elif self.path == "/add-molecules-to-table.html":
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+
+            self.end_headers()
+
+            cursor = self.db.conn.cursor()
+            cursor.execute(f'''SELECT * FROM Molecules;''')
+            molecules = cursor.fetchall()
+
+            current_dict = []
+
+            for i in molecules:
+                current_molecule = self.db.load_mol(i[1])
+                current_dict.append({'number':i[0], 'name': i[1], 'atom_no': current_molecule.atom_no, 'bond_no': current_molecule.bond_no})
+
+            print (current_dict)
+            json_dict = json.dumps(current_dict).encode()
+            self.wfile.write(json_dict)
+            self.send_header('Content-length', len(json_dict))
 
         else:
             # 404 error
@@ -131,11 +141,52 @@ class MyHandler(BaseHTTPRequestHandler):
             header_read = self.rfile.read(int(self.headers['content-length']))
 
             postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
-            element_id = postvars.get('mol_id')[0]
+            element_id = postvars.get('element_id')[0]
 
             self.db.conn.execute(f'''DELETE FROM Elements
-                                    WHERE ELEMENT_NO={element_id}''')
+                                    WHERE ELEMENT_NO={element_id};''')
+            
+            self.db.conn.commit()
+            
+        elif self.path == "/delete-molecule.html":
+            header_read = self.rfile.read(int(self.headers['content-length']))
 
+            postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
+            molecule_id = postvars.get('molecule_id')[0]
+
+            # self.db.conn.execute(f'''DELETE FROM Atoms
+            #             INNER JOIN MoleculeAtom ON Atoms.ATOM_ID=MoleculeAtom.ATOM_ID
+            #             INNER JOIN Molecules ON MoleculeAtom.MOLECULE_ID=Molecules.MOLECULE_ID 
+            #             WHERE MOLECULE_ID='{molecule_id}';'''
+            #            )
+            
+            self.db.conn.execute(f'''DELETE FROM Atoms
+                                    WHERE ATOM_ID IN (SELECT ATOM_ID FROM MoleculeAtom
+                                    WHERE MOLECULE_ID={molecule_id});'''
+                                 )
+            
+            self.db.conn.execute(f'''DELETE FROM Bonds
+                                    WHERE BOND_ID IN (SELECT BOND_ID FROM MoleculeBond
+                                    WHERE MOLECULE_ID={molecule_id});'''
+                                 )
+            
+            # self.db.conn.execute(f'''DELETE FROM Bonds
+            #             INNER JOIN MoleculeBond ON Bonds.BOND_ID=MoleculeBond.BOND_ID
+            #             INNER JOIN Molecules ON MoleculeBond.MOLECULE_ID=Molecules.MOLECULE_ID 
+            #             WHERE MOLECULE_ID={molecule_id};'''
+            #            )
+            
+            self.db.conn.execute(f'''DELETE FROM MoleculeAtom
+                                    WHERE MOLECULE_ID={molecule_id};''')
+            
+            self.db.conn.execute(f'''DELETE FROM MoleculeBond
+                                    WHERE MOLECULE_ID={molecule_id};''')
+                        
+            self.db.conn.execute(f'''DELETE FROM Molecules
+                                    WHERE MOLECULE_ID={molecule_id};''')
+            
+            self.db.conn.commit()
+        
         else:
             # 404 error
             self.send_response(404)

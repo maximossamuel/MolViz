@@ -40,7 +40,7 @@ $(document).ready(
 
             $.post("/delete-element.html",
             {
-                mol_id: deleted_id
+                element_id: deleted_id
             }
             );
         })
