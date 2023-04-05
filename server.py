@@ -136,10 +136,31 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/molecule-add-handler.html":
             header_read = self.rfile.read(int(self.headers['content-length']))
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
 
             postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
             
-            self.db.add_molecule(postvars.get('name')[0], io.StringIO(postvars.get('file')[0]))
+            try:
+                self.db.add_molecule(postvars.get('name')[0], io.StringIO(postvars.get('file')[0]))
+
+                if self.db.load_mol(postvars.get('name')[0]).atom_no == 0 and self.db.load_mol(postvars.get('name')[0]).bond_no == 0:
+                    current_dict = {'status':'failure'}
+
+                    self.db.conn.execute(f'''DELETE FROM Molecules
+                                    WHERE NAME={postvars.get('name')[0]};''')
+                    
+                    self.db.conn.commit()
+
+                else:
+                    current_dict = {'status':'success'}
+            except:
+                current_dict = {'status':'failure'}
+
+            json_dict = json.dumps(current_dict).encode()
+            self.send_header('Content-length', len(json_dict))
+            self.end_headers()         
+            self.wfile.write(json_dict)
 
         elif self.path == "/element-add-handler.html":
             content_length = int(self.headers['Content-length'])
