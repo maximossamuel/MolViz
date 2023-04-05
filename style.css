@@ -1,18 +1,84 @@
-.nav-bar {
-    background-color: aquamarine;
+.logo{
+    padding: 2%;
+    background-color: rgb(126, 126, 126);
     text-align: center;
 }
 
+.navbar{
+    text-align: center;
+    background-color: rgb(126, 126, 126);
+}
+
+.navbar a{
+    padding: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: x-large;
+    text-decoration: none;
+    color: rgb(0, 0, 138);
+}
 
 body {
     background-color: rgb(178, 178, 178);
+    
 }
 
-header {
-    background-color: green;
+.element-input div{
+    padding: 10px;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
+.homepage-options{
+    display: block;
+}
 
-.homepage-options {
-    background-color: aliceblue;
+.homepage-options div{
+    display: flex;
+    justify-content: center;
+}
+
+.homepage-options div div{
+    display: flexbox;
+}
+
+.homepage-options div div h2{
+    text-decoration: none;
+    color: black;
+}
+
+.molecule-input div{
+    text-align: center;
+    padding:10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body{
+    position:relative;
+}
+
+footer{
+    width: 100%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    bottom: 0;
+    text-align: center;
+    background-color: rgb(43, 43, 43);
+    color: rgb(230, 230, 230);
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-decoration: none;
+}
+
+.footerdiv a, a:link{
+    padding: 5px;
+    text-align: center;
+    color: rgb(230, 230, 230);
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+table, th, td{
+    border: 1px solid;
+    border-collapse: collapse;
+    background-color: rgb(206, 206, 206);
+    color:rgb(0, 0, 61);
+    padding: 5px;
 }

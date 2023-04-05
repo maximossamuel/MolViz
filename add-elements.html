@@ -4,7 +4,7 @@
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
             <script src="add-elements.js"></script>
             <meta charset="utf-8"/>
-            <title>MolViz</title>
+            <title>Add Element</title>
             <link rel="stylesheet" type="text/css" href="style.css">
             <div class="logo">
                 <a href="index.html">
@@ -19,20 +19,42 @@
             </div>
         </head>
         <body>
-            <label id="element-number-input">Element number:</label>
-            <input type="number" id="element-number"/><br>
-            <label id="element-code-input">Element code:</label>
-            <input type="text" id="element-code"/><br>
-            <label id="element-name-input">Element name:</label>
-            <input type="text" id="element-name"/><br>
-            <label id="element-color1-input">Element colour 1:</label>
-            <input type="color" id="element-color1"/><br>
-            <label id="element-color2-input">Element colour 2:</label>
-            <input type="color" id="element-color2"/><br>
-            <label id="element-color3-input">Element colour 3:</label>
-            <input type="color" id="element-color3"/><br>
-            <label id="element-radius-input">Element radius:</label>
-            <input type="number" id="element-radius"/><br>
-            <button id="button">Add Element</button>
+            <div class="element-input">
+                <div class="number-input">    
+                    <label id="element-number-input">Element number:</label>
+                    <input type="number" id="element-number"/><br>
+                </div>
+                <div class="code-input">
+                    <label id="element-code-input">Element code:</label>
+                    <input type="text" id="element-code"/><br>
+                </div>
+                <div class="name-input">
+                    <label id="element-name-input">Element name:</label>
+                    <input type="text" id="element-name"/><br>
+                </div>
+                <div class="color-input">
+                    <label id="element-color1-input">Element colour 1:</label>
+                    <input type="color" id="element-color1"/><br>
+                    <label id="element-color2-input">Element colour 2:</label>
+                    <input type="color" id="element-color2"/><br>
+                    <label id="element-color3-input">Element colour 3:</label>
+                    <input type="color" id="element-color3"/><br>
+                </div>
+                <div class="radius-input">
+                    <label id="element-radius-input">Element radius:</label>
+                    <input type="number" id="element-radius"/><br>
+                </div>
+                <div class="submit-button">
+                    <button id="button">Add Element</button>
+                </div>
+            </div>
         </body>
+        <footer>
+            <div id="footerdiv">
+                <p>
+                    Created by Maximos Samuel<br>maximos@uoguelph.ca<br>
+                    <a href="https://gitlab.socs.uoguelph.ca/2750w23/maximos/A4">Gitlab Repository</a>
+                </p>
+            </div>
+        </footer>
     </html>

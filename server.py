@@ -6,7 +6,7 @@ import urllib
 import json
 import io
 
-public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/view-elements.js', '/view-molecules.js', '/logo.png']
+public_files = ['/style.css', '/script.js', '/index.html', '/add-molecules.html', '/add-molecules.js', '/view-molecules.html', '/add-elements.html', '/add-elements.js', '/view-elements.html', '/view-elements.js', '/view-molecules.js', '/logo.png', '/view-mol.png', '/view-element.png', '/add-mol.png', '/add-element.png']
 
 # Subclass of BaseHTTPRequestHandler, used to run python webserver
 class MyHandler(BaseHTTPRequestHandler):
