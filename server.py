@@ -127,6 +127,14 @@ class MyHandler(BaseHTTPRequestHandler):
             
             self.db['Elements'] = (int(postvars.get('number')[0]), postvars.get('code')[0], postvars.get('name')[0], postvars.get('color1')[0][1:], postvars.get('color2')[0][1:], postvars.get('color3')[0][1:], int(postvars.get('radius')[0]))
 
+        elif self.path == "/delete-element.html":
+            header_read = self.rfile.read(int(self.headers['content-length']))
+
+            postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
+            element_id = postvars.get('mol_id')[0]
+
+            self.db.conn.execute(f'''DELETE FROM Elements
+                                    WHERE ELEMENT_NO={element_id}''')
 
         else:
             # 404 error
