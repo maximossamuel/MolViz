@@ -114,6 +114,11 @@ class MyHandler(BaseHTTPRequestHandler):
             self.wfile.write(json_dict)
             self.send_header('Content-length', len(json_dict))
 
+        elif self.path == '/view-molecule-sdf.html':
+            print ('this happened')
+
+            print ("data sent")
+
         else:
             # 404 error
             self.send_response(404)
@@ -186,6 +191,38 @@ class MyHandler(BaseHTTPRequestHandler):
                                     WHERE MOLECULE_ID={molecule_id};''')
             
             self.db.conn.commit()
+
+        elif self.path == "/view-molecule.html":
+            header_read = self.rfile.read(int(self.headers['content-length']))
+
+            postvars = urllib.parse.parse_qs(header_read.decode('utf-8'))
+            print(postvars)
+            molecule_id = postvars.get('molecule_id')[0]
+
+            cursor = self.db.conn.cursor()
+            cursor.execute(f'''SELECT * FROM Molecules
+                            WHERE MOLECULE_ID={molecule_id};''')
+            
+            molecules = cursor.fetchall()
+            self.mol_name = molecules[0][1]
+
+            MolDisplay.radius = self.db.radius()
+            MolDisplay.element_name = self.db.element_name()
+            MolDisplay.header += self.db.radial_gradients()
+
+            mol = self.db.load_mol(self.mol_name)
+            mol.sort()
+            svg_string = mol.svg()
+            
+            self.send_response(200)
+            self.send_header("Content-type", "image/svg+xml")
+            self.send_header("Content-length", len(svg_string))
+            self.end_headers()
+            self.wfile.write(bytes(svg_string, "utf-8"))
+            print ("sent!")
+
+            # self.path = "/view-molecule-sdf.html"
+            # self.do_GET()
         
         else:
             # 404 error

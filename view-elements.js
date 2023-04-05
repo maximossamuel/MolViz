@@ -26,7 +26,7 @@ $.ajax({
     fail: function(result){
         console.log("lol cringe");
     }
-});
+})
 
 $(document).ready(
     function()
