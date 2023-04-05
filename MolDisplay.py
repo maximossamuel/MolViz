@@ -28,7 +28,7 @@ class Atom():
         cy = f'{"{:.2f}".format((self.y * 100.0) + offsety)}'
 
         if radius.get(self.element) == None or element_name.get(self.element) == None:
-            return f'  <circle cx="{cx}" cy="{cy}" r="30" fill="#000000"/>\n'
+            return f'  <circle cx="{cx}" cy="{cy}" r="30" fill="url(#default)"/>\n'
         
         r = f'{radius.get(self.element)}'
         fill = f'{element_name.get(self.element)}'

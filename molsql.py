@@ -231,7 +231,11 @@ class Database:
     # Returns a string consisting of multiple concatenations of the colour codes for all elements
     # in the database
     def radial_gradients(self):
-        radial_gradient_svg = ''
+        radial_gradient_svg = f'''<radialGradient id="default" cx="-50%" cy="-50%" r="220%" fx="20%" fy="20%">
+                    <stop offset="0%" stop-color="#808080"/>
+                    <stop offset="50%" stop-color="#000000"/>
+                    <stop offset="100%" stop-color="#FF0000"/>
+                </radialGradient>'''
 
         # Getting all elements
         cursor = self.conn.cursor()
