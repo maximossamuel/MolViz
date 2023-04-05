@@ -8,7 +8,7 @@ $(document).ready(
             function()
             {
                 if ($("#mol-name").val() == null || $("#sdf_file").prop('files')[0] == null){
-                    alert("Something's not right. Please try again.")
+                    alert("Something's not right. Please try again or check your inputs.")
                 }
                 var reader = new FileReader();
                 var file = $("#sdf_file").prop('files')[0];
@@ -27,7 +27,7 @@ $(document).ready(
                         alert("Uploaded file.");
                     }
                     else{
-                        alert("Cannot upload file. Please try again")
+                        alert("Something's not right. Please try again or check your inputs.")
                     }
                 };
             }

@@ -20,7 +20,7 @@ $(document).ready(
                 alert ("Successfully added.")
             }
             else{
-                alert ("Something's not right. Please try again")
+                alert ("Something's not right. Please try again or check your inputs.")
             }
             }
         );
